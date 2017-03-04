@@ -10,6 +10,8 @@ import {
   MapView
 } from 'react-native';
 
+import LocalImage from './LocalImage'
+
 import {
 	Actions,
 }from 'react-native-router-flux';
@@ -63,10 +65,14 @@ componentDidMount() {
         showsUserLocation={true}
         initialRegion= {this.state.region}
      />
+     <View style={styles.witiHeader} />
      <View style={styles.witiOverlay}>
-     <Text style ={styles.overlayText}>
-     Overlay Text
-     </Text>
+     <LocalImage
+     style={styles.witiOverlayImage}
+     source={require('../icons/KPIs.png')}
+     originalWidth={300}
+     originalHeight={100}
+     />
      </View>
      </View>
       <View style={styles.witiSignupSection}>
@@ -84,19 +90,26 @@ componentDidMount() {
 var styles = StyleSheet.create({
   witiOverlay: {
     position: 'absolute',
-    height: 200,
+    backgroundColor: '#000000',
+    opacity: 0.7,
+    height: 120,
     top: 20,
     left: 0,
     right: 0
   },
-  overlayText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000000'
+  witiHeader: {
+    position: 'absolute',
+    height: 20,
+    top: 0,
+    left: 0,
+    right: 0
+  },
+  witiOverlayImage: {
+    paddingTop: 20
   },
   map:{
     position: 'absolute',
-    top: 0,
+    top: 20,
     left: 0,
     right: 0,
     bottom: 0
