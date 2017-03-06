@@ -13,6 +13,8 @@ import {
 	Actions,
 }from 'react-native-router-flux';
 
+var formatTime = require ('minutes-seconds-milliseconds');
+
 const {width, height} = Dimensions.get('window')
 
 const leftFooterText = "I'm Coming"
@@ -24,7 +26,8 @@ class WitiMap extends React.Component {
     latitude: null,
     longitude: null,
     latitudeDelta: null,
-    longitudeDelta: null
+    longitudeDelta: null,
+    timeElapsed: null
   };
 
   calcDelta(lat, lon, accuracy){
@@ -52,9 +55,13 @@ class WitiMap extends React.Component {
       })
   };
 
-
-
   componentDidMount() {
+    var startTime = new Date();
+    setInterval (() => {
+      this.setState({
+        timeElapsed: new Date() - startTime
+      })
+    }, 1000);
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const lat = position.coords.latitude
@@ -76,7 +83,7 @@ class WitiMap extends React.Component {
       </View>
       <View style={styles.headerRight}>
       <Text style={styles.headerTextRight}>
-      00:43
+      {formatTime(this.state.timeElapsed)}
       </Text>
       </View>
       </View>
