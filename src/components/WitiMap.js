@@ -4,14 +4,16 @@ import {
   View,
   Text,
   StyleSheet,
-  MapView,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  Image
 } from 'react-native';
 
 import {
 	Actions,
 }from 'react-native-router-flux';
+
+import MapView from 'react-native-maps';
 
 var formatTime = require ('minutes-seconds-milliseconds');
 
@@ -22,46 +24,26 @@ const rightFooterText = "Not"
 
 class WitiMap extends React.Component {
 
-  state = {
-    latitude: null,
-    longitude: null,
-    latitudeDelta: null,
-    longitudeDelta: null,
-    timeElapsed: null
-  };
+constructor(props) {
+    super(props)
+  	this.state = {
+      latitude: null,
+      longitude: null,
+      latitudeDelta: null,
+      longitudeDelta: null,
+      timeElapsed: null,
+      latlng: null
+  	}
+}
 
-  calcDelta(lat, lon, accuracy){
-    const oneDegreeOfLongitudInMeters = 111.32;
-    const circumference = (40075 / 360)
-
-    const latDelta = accuracy * (1 / (Math.cos(lat) * circumference))
-    const lonDelta = (accuracy / oneDegreeOfLongitudInMeters)
-
-    this.setState({
-      region: {
-        latitude: lat,
-        longitude: lon,
-        latitudeDelta: latDelta,
-        longitudeDelta: lonDelta
-      },
-      annotations: [{
-            longitude: -84.99343,
-            latitude: 9.934132,
-          },
-          {
-            longitude: -84.92343,
-            latitude: 9.974132,
-          }],
-      })
-  };
-
-  componentDidMount() {
+componentDidMount() {
     var startTime = new Date();
     setInterval (() => {
       this.setState({
         timeElapsed: new Date() - startTime
       })
-    }, 1000);
+    }, 500);
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const lat = position.coords.latitude
@@ -71,6 +53,29 @@ class WitiMap extends React.Component {
       }
     )
   }
+
+calcDelta(lat, lon, accuracy){
+
+    const ASPECT_RATIO = width / height
+    const latDelta = 0.0922
+    const lonDelta = latDelta * ASPECT_RATIO
+
+    const fakeAlertLat = lat + .002
+    const fakeAlertLon = lon + .002
+
+    this.setState({
+      region: {
+        latitude: lat,
+        longitude: lon,
+        latitudeDelta: latDelta,
+        longitudeDelta: lonDelta
+      },
+      latlng: {
+        longitude: fakeAlertLon,
+        latitude: fakeAlertLat
+      }
+      })
+};
 
 	render() {
 		return(
@@ -89,10 +94,17 @@ class WitiMap extends React.Component {
       </View>
       <MapView
         style={styles.map}
-        initialRegion={this.state.region}
+        region={this.state.region}
         showsUserLocation={true}
-        annotations={this.state.annotations}
-     />
+        followUserLocation = {true}
+        zoomEnabled = {true}>
+        <MapView.Marker
+           coordinate={this.state.latlng}
+           image={require('../icons/pinkDot2.png')}
+           title={"title"}
+           description={"description"}
+        />
+      </MapView>
      <View style={styles.mapFooter}>
      <View style={styles.mapFooterLeft}>
      <TouchableOpacity onPress={() => { Actions.map2(); }}>
@@ -147,7 +159,7 @@ var styles = StyleSheet.create({
     fontSize: 20
   },
   headerTextRight: {
-    fontSize: 36,
+    fontSize: 32,
     color: 'red'
   },
   mapFooter: {

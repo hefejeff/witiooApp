@@ -20,7 +20,7 @@ const {width, height} = Dimensions.get('window')
 
 class Front extends React.Component {
 
-  constructor(props) {
+constructor(props) {
   super(props)
 	this.state = {
     latitude: null,
@@ -29,6 +29,7 @@ class Front extends React.Component {
     longitudeDelta: null,
 	}
 }
+
 calcDelta(lat, lon, accuracy){
   const oneDegreeOfLongitudInMeters = 111.32;
   const circumference = (40075 / 360)
