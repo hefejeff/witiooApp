@@ -14,29 +14,34 @@ import {
 }from 'react-native-router-flux';
 
 import MapView from 'react-native-maps';
-
-var formatTime = require ('minutes-seconds-milliseconds');
-
+var dateFormat = require('dateformat');
 const {width, height} = Dimensions.get('window')
-
 const leftFooterText = "I'm Coming"
 const rightFooterText = "Not"
 
 class WitiMap extends React.Component {
 
-constructor(props) {
-    super(props)
-  	this.state = {
+getInitialState() {
+  return {
+    region: {
       latitude: null,
       longitude: null,
       latitudeDelta: null,
-      longitudeDelta: null,
+      longitudeDelta: null
+    },
+  };
+}
+
+constructor(props) {
+    super(props)
+  	this.state = {
       timeElapsed: null,
       latlng: null
   	}
 }
 
 componentDidMount() {
+
     var startTime = new Date();
     setInterval (() => {
       this.setState({
@@ -44,20 +49,24 @@ componentDidMount() {
       })
     }, 500);
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude
-        const lon = position.coords.longitude
-        const accuracy = position.coords.accuracy
-        this.calcDelta(lat, lon, accuracy)
+navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const lat = position.coords.latitude
+      const lon = position.coords.longitude
+      const accuracy = position.coords.accuracy
+      this.calcDelta(lat, lon, accuracy)
       }
     )
-  }
+}
+
+onRegionChange(region) {
+  this.setState({ region });
+}
 
 calcDelta(lat, lon, accuracy){
 
     const ASPECT_RATIO = width / height
-    const latDelta = 0.0922
+    const latDelta = 0.0004
     const lonDelta = latDelta * ASPECT_RATIO
 
     const fakeAlertLat = lat + .002
@@ -88,16 +97,16 @@ calcDelta(lat, lon, accuracy){
       </View>
       <View style={styles.headerRight}>
       <Text style={styles.headerTextRight}>
-      {formatTime(this.state.timeElapsed)}
+      {dateFormat(this.state.timeElapsed, "MM:ss")}
       </Text>
       </View>
       </View>
       <MapView
         style={styles.map}
         region={this.state.region}
+        onRegionChange={this.onRegionChange.bind(this)}
         showsUserLocation={true}
-        followUserLocation = {true}
-        zoomEnabled = {true}>
+        followUserLocation = {true}>
         <MapView.Marker
            coordinate={this.state.latlng}
            image={require('../icons/pinkDot2.png')}
